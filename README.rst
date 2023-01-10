@@ -32,7 +32,8 @@ However, there are also some disadvantages to microservices.
 **Microservices are not suitable for small projects.** They are best used for large projects with many teams, where each team will work on a separate service.
 
 Project Description
-=============
+====================
+
 Our project is an e-commerce marketplace for online courses and physical products. We will be building it using microservices architecture, with each service being responsible for a specific functionality. 
 
 We will be utilizing the power of Django Rest Framework for creating web APIs for our services.
