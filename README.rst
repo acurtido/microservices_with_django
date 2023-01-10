@@ -12,14 +12,14 @@ Each service can be deployed, scaled, and maintained independently, allowing tea
 This can lead to reduced downtime and faster deployment cycles.
 
 Advantages
-***********
+===========
 
 * One of the main advantages of microservices is that it allows for a more modular design, which makes it easier to identify and fix issues. 
 * Microservices can also make it easier to implement new features and technologies, as each service can be updated independently. 
 * Furthermore, microservices are typically easier to test than monolithic applications, which can lead to higher-quality code and fewer bugs.
 
 Disadvantages
-**************
+==============
 
 However, there are also some disadvantages to microservices.
 
@@ -32,7 +32,7 @@ However, there are also some disadvantages to microservices.
 **Microservices are not suitable for small projects.** They are best used for large projects with many teams, where each team will work on a separate service.
 
 Project Description
-====================
+********************
 
 Our project is an e-commerce marketplace for online courses and physical products. We will be building it using microservices architecture, with each service being responsible for a specific functionality. 
 
