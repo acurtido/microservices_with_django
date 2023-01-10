@@ -68,6 +68,10 @@ Getting Started
 
         Python code goes here
 
+**Development**
+****************
+How to develop the app and add more functionality according to your needs
+
 **Production**
 **************
 
