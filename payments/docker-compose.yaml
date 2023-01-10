@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # Django app
+  backend_payments:
+    container_name: boomslag_ms_payments
+    build: .
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8015"
+    volumes:
+      - .:/app
+    ports:
+      - 8015:8015
+    depends_on:
+      - db_payments
+      - redis
+  # Event Queue Kafka
+  queue_payments:
+    build: .
+    command: >
+      sh -c "python consumer.py"
+    depends_on:
+      - db_payments
+  # Database (PostgreSQL)
+  db_payments:
+    image: postgres
+    container_name: django_payments_api_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: boomslag_payments_db
+      POSTGRES_USER: boomslag
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5447:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+  # Redis Cache
+  redis:
+    image: redis
+    container_name: django_payments_api_redis
+    ports:
+      - 6344:6379

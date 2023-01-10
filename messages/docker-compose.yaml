@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # Django app
+  backend_messages:
+    container_name: boomslag_ms_messages
+    build: .
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8009"
+    volumes:
+      - .:/app
+    ports:
+      - 8009:8009
+    depends_on:
+      - db_messages
+      - redis
+  # Event Queue Kafka
+  queue_messages:
+    build: .
+    command: >
+      sh -c "python consumer.py"
+    depends_on:
+      - db_messages
+  # Database (PostgreSQL)
+  db_messages:
+    image: postgres
+    container_name: django_messages_api_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: boomslag_messages_db
+      POSTGRES_USER: boomslag
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5441:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+  # Redis Cache
+  redis:
+    image: redis
+    container_name: django_messages_api_redis
+    ports:
+      - 6388:6379

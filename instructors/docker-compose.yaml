@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # Django app
+  backend_instructors:
+    container_name: boomslag_ms_instructors
+    build: .
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8013"
+    volumes:
+      - .:/app
+    ports:
+      - 8013:8013
+    depends_on:
+      - db_instructors
+      - redis
+  # Event Queue Kafka
+  queue_instructors:
+    build: .
+    command: >
+      sh -c "python consumer.py"
+    depends_on:
+      - db_instructors
+  # Database (PostgreSQL)
+  db_instructors:
+    image: postgres
+    container_name: django_instructors_api_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: boomslag_instructors_db
+      POSTGRES_USER: boomslag
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5445:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+  # Redis Cache
+  redis:
+    image: redis
+    container_name: django_instructors_api_redis
+    ports:
+      - 6342:6379

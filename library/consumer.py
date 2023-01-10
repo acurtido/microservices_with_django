@@ -1,0 +1,59 @@
+import json, os, django
+from confluent_kafka import Consumer
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+django.setup()
+
+from django.apps import apps
+
+Viewed = apps.get_model('courses', 'Viewed')
+Paid = apps.get_model('courses', 'Paid')
+
+consumer = Consumer({
+    'bootstrap.servers': 'pkc-lzvrd.us-west4.gcp.confluent.cloud:9092',
+    'security.protocol': 'SASL_SSL',
+    'sasl.username': 'RJYEK5WX3NACCL7I',
+    'sasl.password': 'M2y8aiqspkOD8JwGAyfz2/NHiMvNXGi8hbx9CW3ctULG+DfxpoLxW96wxp91/jvh',
+    'sasl.mechanism': 'PLAIN',
+    'group.id': 'library_group',
+    'auto.offset.reset': 'earliest'
+})
+
+consumer.subscribe(['user_registered'])
+
+while True:
+    msg = consumer.poll(1.0)
+
+    if msg is None:
+        continue
+    if msg.error():
+        print("Consumer error: {}".format(msg.error()))
+        continue
+
+    print("Received message with Value: {}".format(msg.value()))
+    print("Message Topic: {}".format(msg.topic()))
+    print("Message Key: {}".format(msg.key()))
+
+    topic = msg.topic()
+    value = msg.value()
+
+    if topic == 'user_registered':
+        if msg.key() == b'create_user':
+            user_data = json.loads(value)
+            user_id = user_data['id']
+            # create a cart for the user with the user_id
+            paid_library, created = Paid.objects.get_or_create(author=user_id)
+            if created:
+                paid_library.save()
+            viewed_library, created = Viewed.objects.get_or_create(author=user_id)
+            if created:
+                viewed_library.save()
+    # elif topic == b'"product_added_to_cart"':
+    #     # execute logic for product_added_to_cart event
+    #     if msg.key() == 'add_product_to_cart':
+    #         print('Add product to user cart')
+    #         print(json.loads(value))
+    #         pass
+        pass
+
+consumer.close()

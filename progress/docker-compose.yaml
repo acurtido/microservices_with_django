@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # Django app
+  backend_progress:
+    container_name: boomslag_ms_progress
+    build: .
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8012"
+    volumes:
+      - .:/app
+    ports:
+      - 8012:8012
+    depends_on:
+      - db_progress
+      - redis
+  # Event Queue Kafka
+  queue_progress:
+    build: .
+    command: >
+      sh -c "python consumer.py"
+    depends_on:
+      - db_progress
+  # Database (PostgreSQL)
+  db_progress:
+    image: postgres
+    container_name: django_progress_api_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: boomslag_progress_db
+      POSTGRES_USER: boomslag
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5444:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+  # Redis Cache
+  redis:
+    image: redis
+    container_name: django_progress_api_redis
+    ports:
+      - 6341:6379

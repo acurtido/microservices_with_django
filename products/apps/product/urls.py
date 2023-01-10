@@ -1,0 +1,52 @@
+from django.urls import path
+from .views import *
+
+urlpatterns = [
+    path('product/<productId>', ReadProductView.as_view()),
+    path('product/by_slug/<slug>', ReadProductBySlugView.as_view()),
+    path('get-products', ListProductsView.as_view()),
+    path('search', ListSearchView.as_view()),
+    path('related/<slug>/', ListRelatedView.as_view()),
+    path('by/search', ListBySearchView.as_view()),
+    path("search/<str:search_term>",SearchProductView.as_view()),
+
+    path('create/', CreateProductView.as_view()),
+    path('edit/', EditProductView.as_view()),
+    path('edit/title', EditProductTitleView.as_view()),
+    path('edit/description', EditProductDescriptionView.as_view()),
+    path('edit/discount_until', EditProductDiscountDateView.as_view()),
+    path('edit/discount_bool', EditProductDiscountBoolDateView.as_view()),
+    path('edit/slug', EditProductSlugView.as_view()),
+    path('edit/keywords', EditProductKeywordsView.as_view()),
+    path('edit/quantity', EditProductQuantityView.as_view()),
+    path('edit/price', EditProductPriceView.as_view()),
+    path('edit/compare_price', EditProductComparePriceView.as_view()),
+    path('edit/category', EditProductCategoryView.as_view()),
+    path('delete/<product_id>', DeleteProductView.as_view()),
+    path('publish/<product_id>', PublishProductView.as_view()),
+    path('draft/<product_id>', DraftProductView.as_view()),
+    path('detail/create', CreateProductDetailsView.as_view()),
+    path('detail/edit/title', EditProductDetailTitleView.as_view()),
+    path('detail/edit/description', EditProductDetailDescriptionView.as_view()),
+    path('detail/delete/<detail_id>', DetailDeleteView.as_view()),
+    path('color/get', ListProductColorsView.as_view()),
+    path('color/create', CreateProductColorView.as_view()),
+    path('color/edit', EditProductColorView.as_view()),
+    path('color/delete/<color_id>', ColorDeleteView.as_view()),
+    path('size/create', CreateSizeView.as_view()),
+    path('size/delete/<size_id>', SizeDeleteView.as_view()),
+    path('video/add', AddVideoView.as_view()),
+    path('video/delete/<video_id>', VideoDeleteView.as_view()),
+
+    path('image/add', AddImageView.as_view()),
+    path('image/delete/<image_id>', ImageDeleteView.as_view()),
+
+    path('user', ProductsFromUserView.as_view()),
+    path('vendor/', ProductsFromVendorView.as_view()),
+
+    path("shipping/create",CreateProductShippingView.as_view()),
+    path("shipping/edit/title",EditShippingTitleView.as_view()),
+    path("shipping/edit/time",EditShippingTimeView.as_view()),
+    path("shipping/edit/price",EditShippingPriceView.as_view()),
+    path("shipping/delete/<shipping_id>",ShippingDeleteView.as_view()),
+]

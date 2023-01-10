@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # Django app
+  backend_sellers:
+    container_name: boomslag_ms_sellers
+    build: .
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8014"
+    volumes:
+      - .:/app
+    ports:
+      - 8014:8014
+    depends_on:
+      - db_sellers
+      - redis
+  # Event Queue Kafka
+  queue_sellers:
+    build: .
+    command: >
+      sh -c "python consumer.py"
+    depends_on:
+      - db_sellers
+  # Database (PostgreSQL)
+  db_sellers:
+    image: postgres
+    container_name: django_sellers_api_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: boomslag_sellers_db
+      POSTGRES_USER: boomslag
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5446:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+  # Redis Cache
+  redis:
+    image: redis
+    container_name: django_sellers_api_redis
+    ports:
+      - 6343:6379

@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # Django app
+  backend_cart:
+    container_name: boomslag_ms_cart
+    build: .
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8002"
+    volumes:
+      - .:/app
+    ports:
+      - 8002:8002
+    depends_on:
+      - db_cart
+      - redis
+  # Event Queue Kafka
+  cart_queue:
+    build: .
+    command: >
+      sh -c "python consumer.py"
+    depends_on:
+      - db_cart
+  # Database (PostgreSQL)
+  db_cart:
+    image: postgres
+    container_name: django_cart_api_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: boomslag_cart_db
+      POSTGRES_USER: boomslag
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5433:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+  # Redis Cache
+  redis:
+    image: redis
+    container_name: django_cart_api_redis
+    ports:
+      - 6380:6379

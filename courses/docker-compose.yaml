@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # Django app
+  backend_courses:
+    container_name: boomslag_ms_courses
+    build: .
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8004"
+    volumes:
+      - .:/app
+    ports:
+      - 8004:8004
+    depends_on:
+      - db_courses
+      - redis
+  # Event Queue Kafka
+  queue_courses:
+    build: .
+    command: >
+      sh -c "python consumer.py"
+    depends_on:
+      - db_courses
+  # Database (PostgreSQL)
+  db_courses:
+    image: postgres
+    container_name: django_courses_api_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: boomslag_courses_db
+      POSTGRES_USER: boomslag
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5436:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+  # Redis Cache
+  redis:
+    image: redis
+    container_name: django_courses_api_redis
+    ports:
+      - 6383:6379

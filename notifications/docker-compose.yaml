@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # Django app
+  backend_notifications:
+    container_name: boomslag_ms_notifications
+    build: .
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8010"
+    volumes:
+      - .:/app
+    ports:
+      - 8010:8010
+    depends_on:
+      - db_notifications
+      - redis
+  # Event Queue Kafka
+  queue_notifications:
+    build: .
+    command: >
+      sh -c "python consumer.py"
+    depends_on:
+      - db_notifications
+  # Database (PostgreSQL)
+  db_notifications:
+    image: postgres
+    container_name: django_notifications_api_postgresql
+    restart: always
+    environment:
+      POSTGRES_DB: boomslag_notifications_db
+      POSTGRES_USER: boomslag
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5442:5432
+    volumes:
+      - .dbdata:/var/lib/postgresql
+  # Redis Cache
+  redis:
+    image: redis
+    container_name: django_notifications_api_redis
+    ports:
+      - 6389:6379
